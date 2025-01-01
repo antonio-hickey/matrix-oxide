@@ -2,6 +2,16 @@
 name = "matrix-oxide"
 version = "0.1.0"
 edition = "2021"
+authors = ["Antonio Hickey <contact@antoniohickey.com>"]
+description = "Simple, and Lightweight Linear Algebra Library For Rust."
+documentation = "https://docs.rs/matrix-oxide/latest/matrix-oxide/index.html"
+homepage = "https://crates.io/crates/matrix-oxide"
+repository = "https://github.com/antonio-hickey/matrix-oxide"
+readme = "README.md"
+keywords = ["Linear", "Algebra", "Matrix", "Matrices", "Math"]
+license = "MIT"
+exclude = ["/.github/"]
+include = ["README.md", "src/**/*", "examples/**/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
