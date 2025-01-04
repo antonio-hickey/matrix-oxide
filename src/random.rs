@@ -1,4 +1,3 @@
-use std::f64;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Simple Pseudo Random Number Generator
@@ -36,18 +35,23 @@ impl Random for f64 {
 /// Implements Random trait for `i64`
 impl Random for i64 {
     fn random(seed: &mut u64) -> Self {
-        linear_congruential_generator(seed) as i64
+        // Constrain the max random number for i64 to 50,000
+        const MAX: i64 = 50_000;
+        (linear_congruential_generator(seed) % (MAX as u64)) as i64
     }
 }
 /// Implements Random trait for `i32`
 impl Random for i32 {
     fn random(seed: &mut u64) -> Self {
-        linear_congruential_generator(seed) as i32
+        // Constrain the max random number for i32 to 5,000
+        const MAX: i64 = 5_000;
+        (linear_congruential_generator(seed) % (MAX as u64)) as i32
     }
 }
 /// Implements Random trait for `u8`
 impl Random for u8 {
     fn random(seed: &mut u64) -> Self {
-        linear_congruential_generator(seed) as u8
+        const MAX: u8 = 10;
+        (linear_congruential_generator(seed) % (MAX as u64)) as u8
     }
 }
