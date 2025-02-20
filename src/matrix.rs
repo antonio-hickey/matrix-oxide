@@ -132,9 +132,7 @@ impl<T: Default + Clone> Matrix<T> {
             .filter_map(|col| {
                 if col != skip_col {
                     Some(
-                        self.try_get_column(col)
-                            // TODO: handle this unwrap, im too tired rn
-                            .unwrap()
+                        self.try_get_column(col)?
                             .into_iter()
                             .enumerate()
                             .filter_map(|(row, val)| if row != skip_row { Some(val) } else { None })
@@ -321,14 +319,17 @@ where
                     .enumerate()
                     .fold(T::default(), |acc, (col_idx, item)| {
                         let sub_matrix = self.sub_matrix(0, col_idx);
-                        let sub_determinant = sub_matrix.determinant().unwrap();
 
-                        // Alternate between addition and subtraction
-                        // operations every iteration
-                        if col_idx % 2 == 0 {
-                            acc + item.clone() * sub_determinant
+                        if let Some(sub_determinant) = sub_matrix.determinant() {
+                            // Alternate between addition and subtraction
+                            // operations every iteration
+                            if col_idx % 2 == 0 {
+                                acc + item.clone() * sub_determinant
+                            } else {
+                                acc - item.clone() * sub_determinant
+                            }
                         } else {
-                            acc - item.clone() * sub_determinant
+                            T::default()
                         }
                     });
 
