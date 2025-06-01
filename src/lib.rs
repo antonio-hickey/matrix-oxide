@@ -6,12 +6,12 @@
 //! Installation
 //! ---
 //! Use cargo CLI:
-//! ```
+//! ```sh
 //! cargo install matrix-oxide
 //! ```
 //!
 //! Or manually add it into your Cargo.toml:
-//! ```
+//! ```toml
 //! [dependencies]
 //! matrix-oxide = "0.1.2"
 //! ```
@@ -24,6 +24,8 @@
 //!
 //! Example: Multiply 2 random 2x2 matrices.
 //! ```
+//! use matrix_oxide::Matrix;
+//!
 //! let matrix_a = Matrix::<i32>::new_random(2, 2);
 //! let matrix_b = Matrix::<i32>::new_random(2, 2);
 //!
