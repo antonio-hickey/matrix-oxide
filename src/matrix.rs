@@ -206,6 +206,14 @@ where
             .into_iter()
             .fold(T::default(), |acc, diagonal| acc + diagonal)
     }
+
+    /// Perform a summation over the matrix.
+    pub fn sum(&self) -> T {
+        self.data
+            .iter()
+            .cloned()
+            .fold(T::default(), |acc, x| acc + x)
+    }
 }
 impl<T: Default + Clone + Debug> Sub for Matrix<T>
 where
@@ -817,5 +825,47 @@ mod tests {
         let result: Matrix<i64> = Matrix::new_random(20, 20);
         println!("{:?}", result.data);
         assert_eq!(result.data.len(), 400);
+    }
+
+    #[test]
+    fn test_sum_empty_matrix() {
+        let mat = Matrix::<f64>::new(0, 0);
+        assert_eq!(mat.sum(), 0.0);
+    }
+
+    #[test]
+    fn test_sum_zero_matrix() {
+        let mat = Matrix::<f64>::new(3, 3);
+        assert_eq!(mat.sum(), 0.0);
+    }
+
+    #[test]
+    fn test_sum_positive_elements() {
+        let matrix = Matrix {
+            data: vec![1.0, 2.0, 3.0, 4.0],
+            row_size: 2,
+            col_size: 2,
+        };
+        assert_eq!(matrix.sum(), 10.0);
+    }
+
+    #[test]
+    fn test_sum_negative_elements() {
+        let matrix = Matrix {
+            data: vec![-1.0, -2.0, -3.0, -4.0],
+            row_size: 2,
+            col_size: 2,
+        };
+        assert_eq!(matrix.sum(), -10.0);
+    }
+
+    #[test]
+    fn test_sum_mixed_elements() {
+        let matrix = Matrix {
+            data: vec![-1.0, 2.0, -3.0, 4.0],
+            row_size: 2,
+            col_size: 2,
+        };
+        assert_eq!(matrix.sum(), 2.0);
     }
 }
