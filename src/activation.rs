@@ -90,6 +90,52 @@ where
             col_size: self.col_size,
         }
     }
+
+    /// Apply the softmax activation function onto a `Matrix`.
+    ///
+    /// NOTE: This is a row wise softmax, if you want to run a column
+    /// wise softmax simply transpose or restride the `Matrix` so the
+    /// desired axis is contiguous, then call `Matrix::softmax`.
+    pub fn softmax(&self) -> Matrix<f64>
+    where
+        T: Copy + Into<f64> + From<f64>,
+    {
+        assert_eq!(
+            self.row_size * self.col_size,
+            self.data.len(),
+            "row/column sizes inconsistent with data length"
+        );
+
+        let data: Vec<f64> = self
+            .data
+            .chunks(self.col_size)
+            .flat_map(|row| {
+                let max = row
+                    .iter()
+                    .copied()
+                    .map(Into::<f64>::into)
+                    .fold(f64::NEG_INFINITY, f64::max);
+
+                let denominator: f64 = row
+                    .iter()
+                    .copied()
+                    .map(Into::<f64>::into)
+                    .map(|v| (v - max).exp())
+                    .sum();
+
+                row.iter()
+                    .copied()
+                    .map(Into::<f64>::into)
+                    .map(move |v| ((v - max).exp()) / denominator)
+            })
+            .collect();
+
+        Matrix {
+            data,
+            row_size: self.row_size,
+            col_size: self.col_size,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -179,5 +225,45 @@ mod tests {
             // NOTE: due to inaccuracy in floating point arithmetic this has a tolerance of 0.01
             assert!((Into::<f64>::into(*res) - exp).abs() < 1e-2);
         }
+    }
+
+    #[test]
+    /// Verify the numeric result and that each row sums to 1.
+    fn test_softmax_small() {
+        let x = Matrix {
+            data: vec![1.0, 2.0, 3.0, 1.0, 0.0, 1.0],
+            row_size: 2,
+            col_size: 3,
+        };
+
+        let p_values = x.softmax();
+
+        let expected = [0.090030, 0.244729, 0.665241, 0.422318, 0.155362, 0.422318];
+
+        for (p, &e) in p_values.data.iter().zip(&expected) {
+            assert!((*p - e).abs() < 1e-5);
+        }
+    }
+
+    #[test]
+    /// Verify each row produced by the softmax sums to 1 (within ε).
+    fn test_softmax_rows_sum_to_one() {
+        let x = Matrix {
+            data: vec![
+                0.5, -1.0, 3.2, 4.0, 0.0, 2.0, 2.0, 2.0, 2.0, 2.0, -3.0, -2.0, -1.0, 0.0, 1.0, 6.0,
+                4.0, 2.0, 0.0, -2.0,
+            ],
+            row_size: 4,
+            col_size: 5,
+        };
+
+        let p_values = x.softmax();
+
+        (0..p_values.row_size).for_each(|r| {
+            let start = r * p_values.col_size;
+            let end = start + p_values.col_size;
+            let row_sum: f64 = p_values.data[start..end].iter().sum();
+            assert!((row_sum - 1.0).abs() < 1e-6, "row {r} sums to {row_sum}");
+        })
     }
 }
