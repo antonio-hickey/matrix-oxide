@@ -19,7 +19,7 @@ matrix-oxide = "0.1.2"
 Usage
 ---
 
-For more thorough information, read the [docs](https://docs.rs/matrix-oxide/latest/matrix-oxide/).
+For more thorough information, read the [docs](https://docs.rs/matrix-oxide/).
 
 
 Example: Multiply 2 random 2x2 matrices.
